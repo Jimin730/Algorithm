@@ -12,13 +12,9 @@ class Solution {
                 int sum = 0;
                 if(i!=j){ //본인 인덱스를 제외한 수를 더해줌
                     sum = num + numbers[j];
-                    if(al.contains(sum)) //결과 배열에 이미 같은 수가 있으면 pass
-                        continue;
-                    else
+                    if(!al.contains(sum)) //결과 배열에 이미 같은 수가 있으면 pass
                         al.add(sum); //없으면 추가
                 }
-                else
-                    continue;
             }
         }
         

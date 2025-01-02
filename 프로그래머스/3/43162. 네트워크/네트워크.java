@@ -32,7 +32,7 @@ class Solution {
         visited[i] = true; //방문 처리
         
         for(int k=0; k<map[i].length; k++){
-            if(i != k && map[i][k] == 1 && !visited[k]){ //컴퓨터가 연결되어 있고, 방문을 하지 않은 경우에만 실행
+            if(map[i][k] == 1 && !visited[k]){ //컴퓨터가 연결되어 있고, 방문을 하지 않은 경우에만 실행
                 dfs(k);
             }
         }      

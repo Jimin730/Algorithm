@@ -8,8 +8,6 @@ public class Main {
     public static int N;
     public static boolean[][] visited;
     public static int[][] map;
-    public static int maxH = 0;
-    public static int maxSafeZone = 0;
     public static int[] dx = {0, 0, -1, 1}; //상하좌우
     public static int[] dy = {-1, 1, 0, 0};
 
@@ -19,7 +17,9 @@ public class Main {
 
         map = new int[N][N];
 
+
         //높이 입력 받기
+        int maxH = 0;
         for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
@@ -29,6 +29,7 @@ public class Main {
         }
 
         //물이 잠길 수 있는 최대 높이까지 반복문을 돌며 최대로 나오는 안전지대 개수를 구한다.
+        int maxSafeZone = 0;
         for (int h = 0; h <= maxH; h++) {
             visited = new boolean[N][N];
             int countSafeZone = 0;

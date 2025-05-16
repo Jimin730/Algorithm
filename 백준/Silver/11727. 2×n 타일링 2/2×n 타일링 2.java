@@ -2,25 +2,26 @@ import java.io.*;
 
 // 백준 11727
 public class Main {
-
-    protected static int[] memo;
-
+    
     public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
-        memo = new int[n+1];
 
-        System.out.println(dp(n));
+        if(n == 1) {
+            System.out.println(1);
+            return;
+        }
 
-    }
+        int[] dp = new int[n+1];
 
-    protected static int dp(int n){
+        dp[1] = 1;
+        dp[2] = 3;
 
-        if(n <= 1) return 1;
-        if(memo[n] != 0) return memo[n];
+        for(int i=3; i<=n; i++){
+            dp[i] = (Math.max(Math.max(dp[i-1]+dp[i-2], dp[i-2]+dp[i-2]), dp[i-1]+dp[i-2]+dp[i-2]))%10007;
+        }
 
-        memo[n] = (Math.max(Math.max(dp(n - 1) + dp(n - 2), dp(n - 2) + dp(n - 2)), dp(n - 1) + dp(n - 2) + dp(n - 2))) % 10007;
-        return memo[n];
+        System.out.println(dp[n]);
     }
 }

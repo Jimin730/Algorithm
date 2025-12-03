@@ -1,53 +1,62 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Main {
-    static int[] dx = {0,1,0,-1};
-    static int[] dy = {1,0,-1,0}; //dx,dy 짝지어서 보면됨
-    static boolean[][] visited;
-    static int[][] A;
-    static int N,M;
+class Main {
+    
+    private static int N,M;
+    private static int[][] map;
+    private static boolean[][] visited;
+    private static final int[] dx = {0, 0, -1, 1};
+    private static final int[] dy = {1, -1, 0, 0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer((br.readLine()));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
-        A = new int[N][M];
+        map = new int[N][M];
         visited = new boolean[N][M];
 
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            String line = st.nextToken();  //1011010101 이렇게 한줄로 공백 없이 받아진다.
-            for (int j = 0; j < M; j++) {
-                A[i][j] = Integer.parseInt(line.substring(j,j+1)); //앞으로 가며 하나씩 끊어 데이터를 초기화 해준다.
+        for(int i=0; i<N; i++) {
+            String line = br.readLine();
+            
+            for(int j=0; j<M; j++) {
+                map[i][j] = line.charAt(j) - '0';
             }
         }
+
         bfs(0,0);
-        System.out.println(A[N-1][M-1]);
+
+        System.out.println(map[N-1][M-1]);
     }
-    private static void bfs(int i, int j) {
+
+    private static void bfs(int x, int y) {
         Queue<int[]> q = new LinkedList<>();
-        q.offer(new int[]{i, j});
-        visited[i][j] = true;
-        while (!q.isEmpty()) {
-            int now[] = q.poll();
-            for (int k = 0; k < 4; k++) { //상하좌우로 탐색
-                int x = now[0] + dx[k];
-                int y = now[1] + dy[k];
-                if (x >= 0 && y >= 0 && x < N && y < M) { //배열을 넘어가면 안되고
-                    if (A[x][y] != 0 && !visited[x][y]) { //0이어서 갈 수 없거나, 이미 방문한 곳이면 안된다.
-                        //이제 갈 수 있는 곳이다.
-                        visited[x][y] = true;
-                        A[x][y] = A[now[0]][now[1]] + 1; //핵심
-                        q.offer(new int[] {x, y});
+
+        visited[x][y] = true;
+        q.offer(new int[] {x,y});
+        
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+
+            for(int i=0; i<4; i++) {
+                int nextX = now[0] + dx[i];
+                int nextY = now[1] + dy[i];
+                
+               if (checkMap(nextX, nextY)) {
+                    if(map[nextX][nextY] == 1 && !visited[nextX][nextY]) {
+                        map[nextX][nextY] = map[now[0]][now[1]] + 1;
+    
+                        visited[nextX][nextY] = true;
+                        q.offer(new int[] {nextX, nextY});
                     }
                 }
             }
         }
+    }
+
+    private static boolean checkMap(int x, int y) {
+        return x >= 0 && y >= 0 && x < N && y < M;
     }
 }

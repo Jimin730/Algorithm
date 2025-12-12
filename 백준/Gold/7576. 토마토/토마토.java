@@ -1,82 +1,87 @@
 import java.io.*;
 import java.util.*;
 
-//백준 7576
-public class Main {
+class Main {
 
-    public static int M, N;
-    public static int[][] box;
-    public static int day = 0;
-    public static int[] dx = {0,0,-1,1}; //상하좌우 이동
-    public static int[] dy = {1,-1,0,0};
-    public static Queue<int []> q = new LinkedList<>();
+    private static int M, N; // 가로, 세로
+    private static int[][] box; // 토마토 상자
+    private static int[][] day; // 최수 일 수 기록
+    private static int minDays = 0; // 최수 일 수
+    private static Queue<int[]> q = new LinkedList<>();
 
-    public static void main(String[] args) throws Exception{
+    private static final int[] dx = {0, 0, -1, 1};
+    private static final int[] dy = {1, -1, 0, 0};
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+        
+        M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+        
+        box = new int[N][M]; // 행,열 기준으로 배열 크기 초기화
+        day = new int[N][M];
 
-        M = Integer.parseInt(st.nextToken()); //가로
-        N = Integer.parseInt(st.nextToken()); //세로
-        box = new int[N][M];
+        int count = 0; // 익지 않은 토마토(0) 개수 파악
 
-        //토마토 정보 입력
-        for(int i=0; i<N; i++){
+        for(int i=0; i<N; i++) {
             st = new StringTokenizer(br.readLine());
 
-            for(int j=0; j<M; j++){
-                box[i][j] = Integer.parseInt(st.nextToken());
-            }
-        }
+            for(int j=0; j<M; j++) {
+                int tomatoStatus = Integer.parseInt(st.nextToken());
 
-        for(int i=0; i<N; i++){
-            for(int j=0; j<M; j++){
-                if(box[i][j] == 1){ //익은 토마토만 큐에 넣기
-                    q.offer(new int[]{i,j});
+                if(tomatoStatus == 1) {
+                    q.add(new int[] {i,j});
+                } else if(tomatoStatus == 0) {
+                    count++;
                 }
+
+                box[i][j] = tomatoStatus;
             }
         }
 
-        System.out.println(bfs());
+        if(count == 0) { // 익지 않은 토마토가 없어 모두 익은 상태
+            System.out.println(0);
+            return;
+        } 
+
+        bfs(); 
+
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<M; j++) {
+                if(box[i][j] == 0) {
+                    System.out.println(-1);
+                    return;
+                }
+                minDays = Math.max(minDays, day[i][j]);
+            }
+        }
+
+        System.out.println(minDays);
     }
 
-    public static int bfs(){
+    private static void bfs() {
         while(!q.isEmpty()){
             int[] now = q.poll();
-            int x = now[1];
-            int y = now[0];
+            int nowRow = now[0];
+            int nowCol = now[1];
 
-            for(int k=0; k<4; k++){ //상하좌우만 탐색
-                int nx = x + dx[k];
-                int ny = y + dy[k];
-
-                if(checkMove(nx,ny) && box[ny][nx] == 0){
-                    q.offer(new int[]{ny, nx});
-                    box[ny][nx] = box[y][x] + 1; //최소 일 수를 구하기 위해 그 다음 위치로 이동하는 경우 그 전의 위치에서 + 1
-                }
-
-            }
-        }
-
-        for(int i=0; i<N; i++){
-            for(int j=0; j<M; j++){
-                if(box[i][j] == 0){ //박스 칸을 모두 돌 때 0이 존재하면 -1 (더 이상 익지 못하는 상황으로 판단)
-                    return -1;
-                }
-                else{
-                    day = Math.max(day, box[i][j]); //다 익는데 걸리는 최소 일 수
+            for(int i=0; i<4; i++) {
+                int nextRow = nowRow + dy[i];
+                int nextCol = nowCol + dx[i];
+                
+                if(checkBox(nextRow, nextCol)){
+                    if(box[nextRow][nextCol] == 0) { 
+                        day[nextRow][nextCol] = day[nowRow][nowCol] + 1; // 익는데 걸리는 일 수 기록
+                        box[nextRow][nextCol] = 1; 
+                        q.add(new int[] {nextRow, nextCol});
+                    }
                 }
             }
         }
-
-        if(day == 1){ //이미 모두 익은 상태라면
-            return 0;
-        } else {
-            return day-1; //모두 다 익는데 걸리는 최소 일 수는 day -1.
-        }
-
     }
 
-    public static boolean checkMove(int x, int y){
-        return x>=0 && y>=0 && x<M && y<N;
+    private static boolean checkBox(int row, int col) {
+        return row >= 0 && col >= 0 && row < N && col < M;
     }
 }
